@@ -48,13 +48,13 @@ def prepare_etomo_directory(
         tilt_series: np.ndarray,
         tilt_angles: Sequence[float],
         basename: str,
-) -> EtomoDirectoryHandler:
+) -> EtomoOutput:
     """Prepare a directory for IMOD tilt-series alignment."""
     directory.mkdir(exist_ok=True, parents=True)
-    directory = EtomoDirectoryHandler(basename=basename, directory=directory)
-    mrcfile.write(str(directory.tilt_series_file), tilt_series.astype(np.float32))
-    np.savetxt(directory.rawtlt_file, tilt_angles, fmt='%.2f', delimiter='')
-    return directory
+    output = EtomoOutput(basename=basename, directory=directory)
+    mrcfile.write(str(output.tilt_series_file), tilt_series.astype(np.float32))
+    np.savetxt(output.rawtlt_file, tilt_angles, fmt='%.2f', delimiter='')
+    return output
 
 
 def run_batchruntomo(
@@ -69,7 +69,8 @@ def run_batchruntomo(
             basename=basename,
             directive_file=directive_file
         )
-        subprocess.run(batchruntomo_command)
+        with open(directory / 'log.txt', mode='w') as log:
+            subprocess.run(batchruntomo_command, stdout=log, stderr=log)
 
 
 def _get_batchruntomo_command(
