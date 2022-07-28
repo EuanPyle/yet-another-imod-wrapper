@@ -9,7 +9,7 @@ import numpy as np
 from .io import write_adoc
 
 
-class EtomoDirectoryHandler:
+class EtomoOutput:
     def __init__(self, basename: str, directory: Path):
         self.directory: Path = directory
         self.basename: str = basename
